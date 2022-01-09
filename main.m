@@ -6,8 +6,8 @@ load data.mat
 # plot initial dataset
 figure
 hold on
-plot(data_x, data_y)
-set(gca, 'fontsize', 14)
+set(gca, 'fontsize', 22, "linewidth", 2)
+plot(data_x, data_y, "linewidth", 2)
 xlabel('n');
 ylabel('cond_{med}(A_n)');
 
@@ -21,9 +21,9 @@ X = [ones([n, 1]) x];
 # plot chosen fragment
 figure
 hold on
+set(gca, 'fontsize', 22, "linewidth", 2)
 ylim ([0, 6]);
-scatter(x, y)
-set(gca, 'fontsize', 14)
+scatter(x, y, "filled")
 xlabel('n');
 ylabel('cond_{med}(A_n)');
 
@@ -36,12 +36,12 @@ x_min = min(x);
 x_max = max(x);
 figure
 hold on
+set(gca, 'fontsize', 22, "linewidth", 2)
 ir_scatter(irp_initial, 'b.');
-plot([x_min, x_max], [lsm_betta(1) + lsm_betta(2) * x_min, lsm_betta(1) + lsm_betta(2) * x_max])
-set(gca, 'fontsize', 14)
+plot([x_min, x_max], [lsm_betta(1) + lsm_betta(2) * x_min, lsm_betta(1) + lsm_betta(2) * x_max], "linewidth", 2)
 xlabel('n');
 ylabel('cond_{med}(A_n)');
-legend("interval data", "LSM linear regression")
+legend({"interval data", "LSM linear regression"},  "location", "northwest")
 
 # expand intervals
 [linprog_betta, w] = lin_prog_symmetrical(X, y - rad_y, y + rad_y);
@@ -55,15 +55,15 @@ sup_y = y + rad_y_expanded;
 # plot infset
 figure
 hold on
+set(gca, 'fontsize', 22, "linewidth", 2)
 ir_plotbeta(irp_expanded)
 xlim ([0.95, 1.04]);
-plot(linprog_betta(1), linprog_betta(2), "g*")
-plot(lsm_betta(1), lsm_betta(2), "r*")
-plot(centroid(1), centroid(2), "k*")
-set(gca, 'fontsize', 14)
+scatter(linprog_betta(1), linprog_betta(2), 60, "g", "filled")
+scatter(lsm_betta(1), lsm_betta(2), 60, "r", "filled")
+scatter(centroid(1), centroid(2), 60, "k", "filled")
 xlabel('\beta_1')
 ylabel('\beta_2')
-legend("inf. set", "inf. set boundary", "LP betta", "LSM betta", "centroid")
+legend({"inf. set", "inf. set boundary", "LP betta", "LSM betta", "centroid"}, "location", "east")
 
 # find boundary points
 predict = ir_predict(irp_expanded, irp_expanded.X);
@@ -96,20 +96,34 @@ irp_boundary = ir_problem(X(indices, :), y(indices), rad_y_expanded(indices));
 irp_other = ir_problem(X(other, :), y(other), rad_y_expanded(other));
 
 # plot compatibility cone
-figure
-hold on
 x_min = 0;
 x_max = 29;
+figure
+hold on
+set(gca, 'fontsize', 22, "linewidth", 2)
 ir_plotmodelset(irp_expanded, [x_min, x_max])
-plot([x_min, x_max], [linprog_betta(1) + linprog_betta(2) * x_min, linprog_betta(1) + linprog_betta(2) * x_max], "g")
-plot([x_min, x_max], [lsm_betta(1) + lsm_betta(2) * x_min, lsm_betta(1) + lsm_betta(2) * x_max], "r")
-plot([x_min, x_max], [centroid(1) + centroid(2) * x_min, centroid(1) + centroid(2) * x_max], "k")
 ir_scatter(irp_boundary, 'ro');
 ir_scatter(irp_other, 'b.');
-set(gca, 'fontsize', 14)
 xlabel('n');
 ylabel('cond_{med}(A_n)');
-legend("compatibility cone", "", "", "LP betta", "LSM betta", "centroid", "boundary points", "other points")
+legend({"compatibility cone", "", "", "boundary points", "other points"}, "location", "northwest")
+
+# plot compatibility cone close
+figure
+hold on
+set(gca, 'fontsize', 22, "linewidth", 2)
+xlim ([0, 2]);
+ylim([0.8, 1.3]);
+ir_plotmodelset(irp_expanded, [x_min, x_max])
+plot([x_min, x_max], [linprog_betta(1) + linprog_betta(2) * x_min, linprog_betta(1) + linprog_betta(2) * x_max], "g", "linewidth", 2)
+plot([x_min, x_max], [lsm_betta(1) + lsm_betta(2) * x_min, lsm_betta(1) + lsm_betta(2) * x_max], "r", "linewidth", 2)
+plot([x_min, x_max], [centroid(1) + centroid(2) * x_min, centroid(1) + centroid(2) * x_max], "k--", "linewidth", 2)
+ir_scatter(irp_boundary, 'ro');
+ir_scatter(irp_other, 'b.');
+xlabel('n');
+ylabel('cond_{med}(A_n)');
+legend({"compatibility cone", "", "", "LP betta", "LSM betta", "centroid", "(x_1, y_1)"}, "location", "northwest")
+
 
 test_n = 10;
 x_test = data_x(right + 1: right + test_n)';
@@ -122,15 +136,15 @@ irp_predict = ir_problem(X_test, mid_y_predict, rad_y_predict);
 
 figure
 hold on
+set(gca, 'fontsize', 22, "linewidth", 2)
 xlim ([27, 50]);
 ylim([3, 9]);
 ir_plotmodelset(irp_expanded, [27, 50])
 ir_scatter(irp_predict, 'b.')
-scatter(x_test, y_test, 'r')
-set(gca, 'fontsize', 14)
+scatter(x_test, y_test, 'r', "filled")
 xlabel('n');
 ylabel('cond_{med}(A_n)');
-legend("compatibility cone", "", "", "predicted points", "data points")
+legend({"compatibility cone", "", "", "predicted points", "data points"}, "location", "northwest")
 
 
 
